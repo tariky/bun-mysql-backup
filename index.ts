@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { unlink } from "fs/promises";
-
+import { broadcastMessage } from "./telegram";
 // Configuration
 const config = {
 	database: {
@@ -57,6 +57,7 @@ async function createBackup() {
 		await unlink(backupFile);
 
 		console.log("Backup completed successfully!");
+		await broadcastMessage(`💿 Komoran baza podataka je backupirana!`);
 	} catch (error) {
 		console.error("Backup failed:", error);
 		process.exit(1);
