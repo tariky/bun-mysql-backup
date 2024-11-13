@@ -27,7 +27,7 @@ async function createBackup() {
 	try {
 		// Create database backup using mysqldump
 		console.log("Creating database backup...");
-		await $`mysqldump -h localhost -u ${config.database.user} -p'${config.database.password}' ${config.database.name} gzip > ${backupFile}`;
+		await $`mysqldump -h localhost -u ${config.database.user} -p'${config.database.password}' ${config.database.name} | gzip > ${backupFile}`;
 
 		// Upload to S3
 		console.log("Uploading to S3...");
