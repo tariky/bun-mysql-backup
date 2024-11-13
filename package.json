@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.689.0",
+    "compressing": "^1.10.1"
+  },
+  "name": "bun-backup",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
