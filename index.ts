@@ -28,10 +28,7 @@ async function createBackup() {
 	try {
 		// Create database backup using mysqldump
 		console.log("Creating database backup...");
-		await $`mysqldump -h ${config.database.host} \
-			-u ${config.database.user} \
-			-p${config.database.password} \
-			${config.database.name} > ${backupFile}`;
+		await $`mysqldump -h localhost -u ${config.database.user} -p'${config.database.password}' ${config.database.name} > ${backupFile}`;
 
 		// Compress the backup file
 		console.log("Compressing backup file...");
