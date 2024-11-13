@@ -57,7 +57,9 @@ async function createBackup() {
 		await unlink(backupFile);
 
 		console.log("Backup completed successfully!");
-		await broadcastMessage(`💿 Komoran baza podataka je backupirana!`);
+		await broadcastMessage(
+			`💿 Jupiter Server obavijest \n- Komoran baza podataka je backupirana!`
+		);
 	} catch (error) {
 		console.error("Backup failed:", error);
 		process.exit(1);
