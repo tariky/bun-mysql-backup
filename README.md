@@ -31,3 +31,17 @@ SPACES_SECRET=your-api-secret
 TELEGRAM_BOT_TOKEN=your-bot-token
 TELEGRAM_CHAT_ID=your-chat-id
 ```
+
+## how to setup cronjob
+find out bun executable
+```bash
+which bun
+```
+update cron
+```bash
+crontab -e
+```
+add cron job to end of file - cron will run script every day at 16:00h
+```bash
+0 16 * * * /usr/local/bin/bun /home/user/backup/index.ts
+```
