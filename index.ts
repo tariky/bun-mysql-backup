@@ -22,17 +22,12 @@ const config = {
 
 async function createBackup() {
 	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-	const backupFile = `komoran-backup-${timestamp}.sql`;
-	const zipFile = `${backupFile}.zip`;
+	const backupFile = `komoran-backup-${timestamp}.sql.gz`;
 
 	try {
 		// Create database backup using mysqldump
 		console.log("Creating database backup...");
-		await $`mysqldump -h localhost -u ${config.database.user} -p'${config.database.password}' ${config.database.name} > ${backupFile}`;
-
-		// Compress the backup file
-		console.log("Compressing backup file...");
-		await $`zip ${zipFile} ${backupFile}`;
+		await $`mysqldump -h localhost -u ${config.database.user} -p'${config.database.password}' ${config.database.name} gzip > ${backupFile}`;
 
 		// Upload to S3
 		console.log("Uploading to S3...");
@@ -46,12 +41,12 @@ async function createBackup() {
 			forcePathStyle: false,
 		});
 
-		const fileBuffer = await Bun.file(zipFile).arrayBuffer();
+		const fileBuffer = await Bun.file(backupFile).arrayBuffer();
 
 		await s3Client.send(
 			new PutObjectCommand({
 				Bucket: config.spaces.bucket,
-				Key: zipFile,
+				Key: backupFile,
 				Body: Buffer.from(fileBuffer),
 				ContentType: "application/zip",
 			})
@@ -60,7 +55,6 @@ async function createBackup() {
 		// Clean up temporary files
 		console.log("Cleaning up temporary files...");
 		await unlink(backupFile);
-		await unlink(zipFile);
 
 		console.log("Backup completed successfully!");
 	} catch (error) {
