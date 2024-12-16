@@ -112,7 +112,7 @@ async function createBackup(
 	}
 }
 
-app.get("/backup", async (c) => {
+app.post("/backup", async (c) => {
 	const sattledData = await Promise.all(
 		databases.map(async (database) => {
 			return await createBackup(
