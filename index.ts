@@ -1,7 +1,41 @@
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import axios from "axios";
 import { $ } from "bun";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { unlink } from "fs/promises";
-import { broadcastMessage } from "./telegram";
+import { Hono } from "hono";
+const app = new Hono();
+
+const databases = [
+	{
+		name: "Lunatik -Komoran",
+		username: "tarik",
+		password: "56871690",
+		host: "localhost",
+		port: "3306",
+	},
+	{
+		name: "Sos - Komoran",
+		username: "tarik",
+		password: "56871690",
+		host: "localhost",
+		port: "3306",
+	},
+	{
+		name: "Moj Salon",
+		username: "mojsalon",
+		password: "Kj8mP9vX4nL2qY5tR3wZ",
+		host: "localhost",
+		port: "3306",
+	},
+	{
+		name: "Bis - WP",
+		username: "bis",
+		password: "RrXZYDqMQsj6zV2phFBm57",
+		host: "localhost",
+		port: "3306",
+	},
+];
+
 // Configuration
 const config = {
 	database: {
@@ -20,14 +54,27 @@ const config = {
 	},
 };
 
-async function createBackup() {
+async function sendNotification(notification: string) {
+	await axios.post(
+		`https://ntfy.lunatik.cloud/backup?title="Backup"`,
+		notification
+	);
+}
+
+async function createBackup(
+	name: string,
+	username: string,
+	password: string,
+	host: string,
+	port: string
+) {
 	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-	const backupFile = `komoran-backup-${timestamp}.sql.gz`;
+	const backupFile = `${name}-backup-${timestamp}.sql.gz`;
 
 	try {
 		// Create database backup using mysqldump
 		console.log("Creating database backup...");
-		await $`mysqldump -h localhost -u ${config.database.user} -p'${config.database.password}' ${config.database.name} | gzip > ${backupFile}`;
+		await $`mysqldump -h ${host} -u ${username} -p'${password}' ${name} | gzip > ${backupFile}`;
 
 		// Upload to S3
 		console.log("Uploading to S3...");
@@ -57,13 +104,36 @@ async function createBackup() {
 		await unlink(backupFile);
 
 		console.log("Backup completed successfully!");
-		await broadcastMessage(
-			`💿 Jupiter Server obavijest \n- Komoran baza podataka je backupirana!`
-		);
+		return `${name} - backup je uspješno napravljen!`;
 	} catch (error) {
 		console.error("Backup failed:", error);
 		process.exit(1);
 	}
 }
 
-createBackup();
+app.get("/backup", async (c) => {
+	const sattledData = await Promise.all(
+		databases.map(async (database) => {
+			await createBackup(
+				database.name,
+				database.username,
+				database.password,
+				database.host,
+				database.port
+			);
+		})
+	);
+
+	// array of string display as list of strings
+	const message = sattledData.join("\n");
+	await sendNotification(message);
+
+	return c.json({ message: "Backup created successfully" });
+});
+
+console.log("Server is running on port 3010");
+
+export default {
+	port: 3010,
+	fetch: app.fetch,
+};
