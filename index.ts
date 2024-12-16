@@ -1,8 +1,8 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import axios from "axios";
 import { $ } from "bun";
-import { unlink } from "fs/promises";
 import { Hono } from "hono";
+import { unlink } from "node:fs/promises";
 const app = new Hono();
 
 const databases = [
@@ -100,8 +100,9 @@ async function createBackup(
 		);
 
 		// Clean up temporary files
-		console.log("Cleaning up temporary files...");
 		await unlink(backupFile);
+
+		// delete old backups using nodejs api
 
 		console.log("Backup completed successfully!");
 		return `${name} - backup je uspješno napravljen!`;
