@@ -21,7 +21,7 @@ const databases = [
 		port: "3306",
 	},
 	{
-		name: "Moj Salon",
+		name: "Moj Salon - App",
 		username: "root",
 		password: "56871690",
 		host: "localhost",
