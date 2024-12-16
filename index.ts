@@ -7,28 +7,28 @@ const app = new Hono();
 
 const databases = [
 	{
-		name: "Lunatik -Komoran",
+		name: "komoran",
 		username: "root",
 		password: "56871690",
 		host: "localhost",
 		port: "3306",
 	},
 	{
-		name: "Sos - Komoran",
+		name: "sos-komoran",
 		username: "root",
 		password: "56871690",
 		host: "localhost",
 		port: "3306",
 	},
 	{
-		name: "Moj Salon - App",
+		name: "mojsalon",
 		username: "root",
 		password: "56871690",
 		host: "localhost",
 		port: "3306",
 	},
 	{
-		name: "Bis - WP",
+		name: "bis",
 		username: "root",
 		password: "56871690",
 		host: "localhost",
